@@ -1,5 +1,0 @@
-fix: address PR review health contract, DI, CORS and readiness
-
-Align client/README on /api/health, mock PrismaService in controller specs,
-enable CORS and Vite /api proxy, load env via ConfigModule, and return 503
-when the database is down without failing Nest boot.
