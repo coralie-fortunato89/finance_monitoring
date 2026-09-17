@@ -10,7 +10,7 @@ Monorepo Nx — NestJS + Prisma + PostgreSQL (API) et React + TanStack Start / R
 
 ## Structure
 
-- `apps/api` — NestJS + Prisma (`GET /` et `GET /health`)
+- `apps/api` — NestJS + Prisma (`GET /api` et `GET /api/health`)
 - `apps/web` — TanStack Start (Router inclus), TanStack Query, TanStack Table, Axios
 - `docker-compose.yml` — PostgreSQL 16
 
@@ -33,10 +33,10 @@ npm run db:up
 npm run prisma:generate
 npm run prisma:migrate
 
-# 5. API — http://localhost:3000  (health: GET /health)
+# 5. API — http://localhost:3000/api  (health: GET /api/health)
 npm run api:serve
 
-# 6. Web — http://localhost:3001
+# 6. Web — http://localhost:3001 (proxy /api → API)
 npm run web:dev
 ```
 
@@ -56,3 +56,4 @@ npm run web:dev
 - Aucun modèle métier finance pour l'instant — placeholder Prisma `HealthCheck` uniquement.
 - Package manager: **npm**.
 - Prisma CLI pinned en **v6** (ORM classique `generate` / `migrate`).
+- CORS autorise localhost ; en dev le proxy Vite `/api` évite les appels cross-origin.

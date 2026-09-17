@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const baseURL =
-  import.meta.env.VITE_API_BASE_URL?.toString() || 'http://localhost:3000';
+const baseURL = import.meta.env.VITE_API_BASE_URL?.toString() ?? '';
 
 export const apiClient = axios.create({
   baseURL,
@@ -14,6 +13,6 @@ export type HealthResponse = {
 };
 
 export async function fetchHealth(): Promise<HealthResponse> {
-  const { data } = await apiClient.get<HealthResponse>('/health');
+  const { data } = await apiClient.get<HealthResponse>('/api/health');
   return data;
 }
