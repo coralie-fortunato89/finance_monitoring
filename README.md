@@ -26,8 +26,8 @@ copy .env.example .env
 copy apps\api\.env.example apps\api\.env
 copy apps\web\.env.example apps\web\.env
 
-# 3. Base Postgres (via WSL)
-wsl -e bash -lc "cd /mnt/c/Users/cfortunato/projet/GrokBot_playground/finance_monitoring && docker compose up -d postgres"
+# 3. Base Postgres (Docker dans WSL, depuis la racine du repo)
+npm run db:up
 
 # 4. Prisma
 npm run prisma:generate
@@ -46,7 +46,7 @@ npm run web:dev
 |--------|------|
 | `npm run api:serve` | Nest via Nx |
 | `npm run web:dev` | TanStack Start (port 3001) |
-| `npm run db:up` / `db:down` | Postgres via Docker dans WSL |
+| `npm run db:up` / `db:down` | Postgres via Docker dans WSL (chemin résolu dynamiquement) |
 | `npm run prisma:generate` | Client Prisma |
 | `npm run prisma:migrate` | Migrations |
 | `npm run prisma:studio` | Prisma Studio |
