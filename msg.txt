@@ -1,3 +1,0 @@
-feat(auth): Query Form refresh-family and tight CORS 
- 
-Address rev residuals (refresh token families + reuse revoke, CORS_ORIGINS, client single-flight refresh) and refactor auth UI to TanStack Query + TanStack Form. 
