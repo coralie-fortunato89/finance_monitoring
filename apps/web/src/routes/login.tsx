@@ -9,6 +9,7 @@ import {
 import { login, mapAuthError } from '../lib/auth'
 import { authKeys } from '../lib/auth-keys'
 import { ensureAuthUser } from '../lib/auth-queries'
+import { validateEmail } from '../lib/auth-validators'
 
 export const Route = createFileRoute('/login')({
   beforeLoad: async ({ context }) => {
@@ -70,12 +71,7 @@ function LoginPage() {
         <form.Field
           name="email"
           validators={{
-            onChange: ({ value }) =>
-              !value.trim()
-                ? 'Email requis'
-                : !/^[^s@]+@[^s@]+.[^s@]+$/.test(value)
-                  ? 'Email invalide'
-                  : undefined,
+            onChange: ({ value }) => validateEmail(value),
           }}
         >
           {(field) => (

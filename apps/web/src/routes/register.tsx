@@ -9,9 +9,11 @@ import {
 import { mapAuthError, register } from '../lib/auth'
 import { authKeys } from '../lib/auth-keys'
 import { ensureAuthUser } from '../lib/auth-queries'
-
-const passwordRule = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*d).{10,}$/
+import {
+  validateEmail,
+  validatePassword,
+  validateRequired,
+} from '../lib/auth-validators'
 
 export const Route = createFileRoute('/register')({
   beforeLoad: async ({ context }) => {
@@ -80,8 +82,7 @@ function RegisterPage() {
         <form.Field
           name="firstName"
           validators={{
-            onChange: ({ value }) =>
-              !value.trim() ? 'Prénom requis' : undefined,
+            onChange: ({ value }) => validateRequired(value, 'Prénom'),
           }}
         >
           {(field) => (
@@ -108,8 +109,7 @@ function RegisterPage() {
         <form.Field
           name="lastName"
           validators={{
-            onChange: ({ value }) =>
-              !value.trim() ? 'Nom requis' : undefined,
+            onChange: ({ value }) => validateRequired(value, 'Nom'),
           }}
         >
           {(field) => (
@@ -136,12 +136,7 @@ function RegisterPage() {
         <form.Field
           name="email"
           validators={{
-            onChange: ({ value }) =>
-              !value.trim()
-                ? 'Email requis'
-                : !/^[^s@]+@[^s@]+.[^s@]+$/.test(value)
-                  ? 'Email invalide'
-                  : undefined,
+            onChange: ({ value }) => validateEmail(value),
           }}
         >
           {(field) => (
@@ -169,10 +164,7 @@ function RegisterPage() {
         <form.Field
           name="password"
           validators={{
-            onChange: ({ value }) =>
-              !passwordRule.test(value)
-                ? 'Au moins 10 caractères, une majuscule, une minuscule et un chiffre.'
-                : undefined,
+            onChange: ({ value }) => validatePassword(value),
           }}
         >
           {(field) => (
