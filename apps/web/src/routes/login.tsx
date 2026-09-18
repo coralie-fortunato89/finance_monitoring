@@ -1,5 +1,6 @@
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { isAuthenticated, login } from '../lib/auth';
 
 export const Route = createFileRoute("/login")({
