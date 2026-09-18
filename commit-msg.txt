@@ -1,3 +1,0 @@
-fix(auth): harden JWT cookies rate-limit and session security 
- 
-Address rev review on PR #3: reject weak JWT_SECRET at boot, httpOnly cookies with short access + rotatable refresh, throttling, P2002 as 409, login timing equalization, fetchMe guard, error mapping, password policy, auth unit tests, README. 
