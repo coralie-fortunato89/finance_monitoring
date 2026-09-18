@@ -108,3 +108,13 @@ Override via `CORS_ORIGINS` (liste séparée par des virgules) — plus de wildc
 
 Les routes sous `_authenticated` appellent `/api/auth/me` (puis `/refresh` en secours) avant de rendre la page. Un 401 redirige vers `/login`.
 
+## Swagger
+
+OpenAPI UI is served with the Nest API:
+
+- UI: `http://localhost:3000/api/docs`
+- JSON: `http://localhost:3000/api/docs/json`
+- YAML: `http://localhost:3000/api/docs/yaml`
+
+Controllers and DTOs use `@nestjs/swagger` decorators so new endpoints should be documented the same way (`@ApiTags`, `@ApiOperation`, `@Api*Response`, `@ApiProperty` on DTOs).
+
