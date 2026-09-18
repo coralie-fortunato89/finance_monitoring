@@ -1,3 +1,0 @@
-docs(api): add NestJS Swagger OpenAPI docs 
- 
-Expose Swagger UI at /api/docs with annotated auth and health endpoints, response DTOs, cookie and Bearer security schemes, and README links. 
