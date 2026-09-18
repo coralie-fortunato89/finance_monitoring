@@ -7,6 +7,7 @@
 }
 
 :root {
+  color-scheme: light;
   --sea-ink: #173a40;
   --sea-ink-soft: #416166;
   --lagoon: #4fb8b2;
@@ -51,8 +52,14 @@
 /*
   Dark theme — inspired by GitHub Primer / Linear / Vercel:
   darker inset fields, near-white primary text, muted secondary that still clears WCAG AA.
+
+  Single source of truth: explicit dark (`data-theme="dark"`) and resolved `.dark`
+  (set by ThemeToggle + early THEME_INIT_SCRIPT in __root for FOUC / auto mode).
+  Do not re-copy these variables into a prefers-color-scheme media block.
 */
-:root[data-theme="dark"] {
+:root[data-theme="dark"],
+:root.dark {
+  color-scheme: dark;
   --sea-ink: #e8f2f0;
   --sea-ink-soft: #9eb8b3;
   --lagoon: #3dbeb6;
@@ -92,48 +99,6 @@
   --danger: #f87171;
   --danger-soft: rgba(248, 113, 113, 0.12);
   --danger-border: rgba(248, 113, 113, 0.35);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --sea-ink: #e8f2f0;
-    --sea-ink-soft: #9eb8b3;
-    --lagoon: #3dbeb6;
-    --lagoon-deep: #6ed4cb;
-    --palm: #5fb892;
-    --sand: #0b1215;
-    --foam: #0f171a;
-    --surface: rgba(22, 32, 36, 0.88);
-    --surface-strong: #161f23;
-    --line: rgba(148, 186, 180, 0.2);
-    --inset-glint: rgba(110, 212, 203, 0.08);
-    --kicker: #7dcdc3;
-    --bg-base: #080e10;
-    --header-bg: rgba(8, 14, 16, 0.86);
-    --chip-bg: #121a1e;
-    --chip-line: rgba(148, 186, 180, 0.28);
-    --link-bg-hover: rgba(30, 44, 48, 0.9);
-    --link-hover: #8de5db;
-    --hero-a: rgba(61, 190, 182, 0.14);
-    --hero-b: rgba(95, 184, 146, 0.1);
-    --glow-a: rgba(61, 190, 182, 0.12);
-    --glow-b: rgba(95, 184, 146, 0.1);
-    --glow-c: rgba(110, 212, 203, 0.06);
-    --glow-opacity: 0.45;
-    --grid-opacity: 0.06;
-    --shadow-soft: rgba(0, 0, 0, 0.35);
-    --shadow-deep: rgba(0, 0, 0, 0.28);
-    --field-bg: #0c1417;
-    --field-bg-hover: #10191d;
-    --field-text: #f2f8f6;
-    --field-placeholder: #7f9893;
-    --field-border: rgba(148, 186, 180, 0.32);
-    --field-border-focus: #3dbeb6;
-    --field-ring: rgba(61, 190, 182, 0.32);
-    --danger: #f87171;
-    --danger-soft: rgba(248, 113, 113, 0.12);
-    --danger-border: rgba(248, 113, 113, 0.35);
-  }
 }
 
 * {
@@ -248,6 +213,27 @@ select:focus,
   outline: none;
   border-color: var(--field-border-focus);
   box-shadow: 0 0 0 3px var(--field-ring);
+}
+
+
+/* WebKit autofill — keep field tokens (avoids yellow/white flash that breaks dark contrast) */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):-webkit-autofill,
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):-webkit-autofill:hover,
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+.field-input:-webkit-autofill,
+.field-input:-webkit-autofill:hover,
+.field-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--field-text);
+  caret-color: var(--field-text);
+  border-color: var(--field-border);
+  transition: background-color 99999s ease-out;
+  box-shadow: 0 0 0 1000px var(--field-bg) inset;
 }
 
 .page-wrap {
