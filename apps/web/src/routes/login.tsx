@@ -85,10 +85,10 @@ function LoginPage() {
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-[rgba(23,58,64,0.2)] bg-white/80 px-3 py-2"
+                className="field-input mt-1 w-full rounded-xl border border-[var(--field-border)] bg-[var(--field-bg)] px-3 py-2 text-[var(--field-text)] placeholder:text-[var(--field-placeholder)]"
               />
               {field.state.meta.isTouched && field.state.meta.errors[0] ? (
-                <span className="mt-1 block text-xs text-red-700">
+                <span className="mt-1 block text-xs text-[var(--danger)]">
                   {field.state.meta.errors[0]}
                 </span>
               ) : null}
@@ -114,10 +114,10 @@ function LoginPage() {
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-[rgba(23,58,64,0.2)] bg-white/80 px-3 py-2"
+                className="field-input mt-1 w-full rounded-xl border border-[var(--field-border)] bg-[var(--field-bg)] px-3 py-2 text-[var(--field-text)] placeholder:text-[var(--field-placeholder)]"
               />
               {field.state.meta.isTouched && field.state.meta.errors[0] ? (
-                <span className="mt-1 block text-xs text-red-700">
+                <span className="mt-1 block text-xs text-[var(--danger)]">
                   {field.state.meta.errors[0]}
                 </span>
               ) : null}
@@ -125,7 +125,7 @@ function LoginPage() {
           )}
         </form.Field>
 
-        {formError ? <p className="text-sm text-red-700">{formError}</p> : null}
+        {formError ? <p className="text-sm text-[var(--danger)]">{formError}</p> : null}
 
         <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
           {([canSubmit, isSubmitting]) => (
