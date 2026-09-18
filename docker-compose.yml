@@ -4,7 +4,7 @@ services:
     container_name: finance_monitoring_db
     restart: unless-stopped
     ports:
-      - '5432:5432'
+      - '5436:5432'
     environment:
       POSTGRES_USER: finance
       POSTGRES_PASSWORD: finance
