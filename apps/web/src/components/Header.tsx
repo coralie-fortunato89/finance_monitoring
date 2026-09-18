@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
 import ThemeToggle from './ThemeToggle'
-import { authKeys } from '../lib/auth-keys'
 import { clearAuthCache, meQueryOptions } from '../lib/auth-queries'
 
 export default function Header() {
@@ -25,7 +24,7 @@ export default function Header() {
   const authed = !authPage && Boolean(meQuery.data)
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[rgba(23,58,64,0.12)] bg-[rgba(255,255,255,0.72)] backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--header-bg)] text-[var(--sea-ink)] backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
         <Link
           to={authed ? '/' : '/login'}
@@ -38,13 +37,13 @@ export default function Header() {
             <>
               <Link
                 to="/"
-                className="text-sm font-medium text-[var(--sea-ink-soft)] no-underline"
+                className="text-sm font-medium text-[var(--sea-ink-soft)] no-underline hover:text-[var(--sea-ink)]"
               >
                 Accueil
               </Link>
               <Link
                 to="/about"
-                className="text-sm font-medium text-[var(--sea-ink-soft)] no-underline"
+                className="text-sm font-medium text-[var(--sea-ink-soft)] no-underline hover:text-[var(--sea-ink)]"
               >
                 À propos
               </Link>
@@ -52,7 +51,7 @@ export default function Header() {
                 type="button"
                 disabled={logoutMutation.isPending}
                 onClick={() => logoutMutation.mutate()}
-                className="rounded-full border border-[rgba(23,58,64,0.2)] px-3 py-1 text-sm font-semibold disabled:opacity-60"
+                className="rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1 text-sm font-semibold text-[var(--sea-ink)] transition hover:bg-[var(--link-bg-hover)] disabled:opacity-60"
               >
                 {logoutMutation.isPending ? '…' : 'Déconnexion'}
               </button>
@@ -61,13 +60,13 @@ export default function Header() {
             <>
               <Link
                 to="/login"
-                className="text-sm font-medium text-[var(--sea-ink-soft)] no-underline"
+                className="text-sm font-medium text-[var(--sea-ink-soft)] no-underline hover:text-[var(--sea-ink)]"
               >
                 Connexion
               </Link>
               <Link
                 to="/register"
-                className="text-sm font-semibold text-[var(--lagoon-deep)] no-underline"
+                className="text-sm font-semibold text-[var(--lagoon-deep)] no-underline hover:text-[var(--link-hover)]"
               >
                 Inscription
               </Link>
