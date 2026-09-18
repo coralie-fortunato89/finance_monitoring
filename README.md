@@ -86,6 +86,18 @@ L'API protège les routes avec JWT (algorithme HS256).
 | POST | `/api/auth/logout` | cookie | révoque le refresh token côté serveur |
 | GET | `/api/auth/me` | cookie access (ou Bearer) | profil courant |
 
+### CORS
+
+Par défaut l'API n'autorise que `http://localhost:3001` et `http://127.0.0.1:3001` (front Vite).
+Override via `CORS_ORIGINS` (liste séparée par des virgules) — plus de wildcard `localhost:*`.
+
+### Front auth (TanStack Query + Form)
+
+- Session utilisateur : query key `['auth','me']` (`ensureQueryData` / `useQuery` / `setQueryData` après login-register).
+- Mutations login/register/logout via `useMutation` (invalidation / cache explicite).
+- Formulaires login/register via `@tanstack/react-form` (`useForm` + `form.Field`).
+- Refresh token single-flight côté client pour éviter les courses concurrentes.
+
 ### Cookies (pas de localStorage)
 
 - `fm_access_token` : httpOnly, SameSite=Lax, durée **15 minutes**

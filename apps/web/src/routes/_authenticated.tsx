@@ -1,24 +1,19 @@
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
-import { fetchMe, logout, refreshSession } from '../lib/auth';
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import { clearAuthCache, ensureAuthUser } from '../lib/auth-queries'
 
 export const Route = createFileRoute('/_authenticated')({
-  beforeLoad: async () => {
+  beforeLoad: async ({ context }) => {
     try {
-      const user = await fetchMe();
-      return { user };
+      const user = await ensureAuthUser(context.queryClient)
+      return { user }
     } catch {
-      try {
-        const refreshed = await refreshSession();
-        return { user: refreshed.user };
-      } catch {
-        await logout();
-        throw redirect({ to: '/login' });
-      }
+      await clearAuthCache(context.queryClient)
+      throw redirect({ to: '/login' })
     }
   },
   component: AuthenticatedLayout,
-});
+})
 
 function AuthenticatedLayout() {
-  return <Outlet />;
+  return <Outlet />
 }

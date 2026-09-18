@@ -3,6 +3,16 @@ import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app/app.module';
 
+function parseCorsOrigins(): string[] {
+  const raw =
+    process.env.CORS_ORIGINS ??
+    'http://localhost:3001,http://127.0.0.1:3001';
+  return raw
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -17,10 +27,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: [
-      new RegExp('^http://localhost:\\d+$'),
-      new RegExp('^http://127\\.0\\.0\\.1:\\d+$'),
-    ],
+    origin: parseCorsOrigins(),
     credentials: true,
   });
 
