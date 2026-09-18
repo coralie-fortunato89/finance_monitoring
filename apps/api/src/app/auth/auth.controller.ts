@@ -2,22 +2,24 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiConflictResponse,
   ApiCookieAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse,
-  ApiConflictResponse,
-  ApiBadRequestResponse,
   ApiTooManyRequestsResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
@@ -29,13 +31,13 @@ import {
 } from './auth-cookies';
 import { CurrentUser } from './current-user.decorator';
 import type { AuthUser } from './current-user.decorator';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
 import {
   AuthSessionResponseDto,
   LogoutResponseDto,
 } from './dto/auth-response.dto';
+import { LoginDto } from './dto/login.dto';
 import { PublicUserDto } from './dto/public-user.dto';
+import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('auth')
@@ -50,6 +52,7 @@ export class AuthController {
     description:
       'Creates the account and sets httpOnly access + refresh cookies.',
   })
+  @ApiBody({ type: RegisterDto })
   @ApiCreatedResponse({ type: AuthSessionResponseDto })
   @ApiBadRequestResponse({ description: 'Validation error' })
   @ApiConflictResponse({ description: 'Email already registered' })
@@ -65,10 +68,12 @@ export class AuthController {
 
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post('login')
+  @HttpCode(200)
   @ApiOperation({
     summary: 'Login',
     description: 'Validates credentials and sets httpOnly session cookies.',
   })
+  @ApiBody({ type: LoginDto })
   @ApiOkResponse({ type: AuthSessionResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid email or password' })
   @ApiTooManyRequestsResponse({ description: 'Rate limit exceeded' })
@@ -83,10 +88,12 @@ export class AuthController {
 
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @Post('refresh')
+  @HttpCode(200)
+  @ApiCookieAuth('fm_refresh_token')
   @ApiOperation({
     summary: 'Refresh session',
     description:
-      'Rotates the refresh cookie (same family). Reuse of an old refresh token revokes the whole family.',
+      'Rotates the refresh cookie (same family). Reuse of an old refresh token revokes the whole family. Requires the browser to already hold `fm_refresh_token` (call login/register in this UI first).',
   })
   @ApiOkResponse({ type: AuthSessionResponseDto })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid refresh cookie' })
@@ -102,9 +109,12 @@ export class AuthController {
   }
 
   @Post('logout')
+  @HttpCode(200)
+  @ApiCookieAuth('fm_refresh_token')
   @ApiOperation({
     summary: 'Logout',
-    description: 'Revokes the refresh-token family and clears auth cookies.',
+    description:
+      'Revokes the refresh-token family and clears auth cookies. Prefer calling after login in the same browser session so the refresh cookie is present.',
   })
   @ApiOkResponse({ type: LogoutResponseDto })
   async logout(

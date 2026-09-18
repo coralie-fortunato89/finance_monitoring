@@ -110,11 +110,20 @@ Les routes sous `_authenticated` appellent `/api/auth/me` (puis `/refresh` en se
 
 ## Swagger
 
-OpenAPI UI is served with the Nest API:
+L'UI OpenAPI est servie avec l'API Nest **hors production** (ou si `SWAGGER_ENABLED=true`) :
 
-- UI: `http://localhost:3000/api/docs`
-- JSON: `http://localhost:3000/api/docs/json`
-- YAML: `http://localhost:3000/api/docs/yaml`
+- UI : `http://localhost:3000/api/docs`
+- JSON : `http://localhost:3000/api/docs/json`
+- YAML : `http://localhost:3000/api/docs/yaml`
 
-Controllers and DTOs use `@nestjs/swagger` decorators so new endpoints should be documented the same way (`@ApiTags`, `@ApiOperation`, `@Api*Response`, `@ApiProperty` on DTOs).
+En `NODE_ENV=production`, Swagger est **désactivé** sauf `SWAGGER_ENABLED=true`. Tu peux aussi forcer l'arrêt en local avec `SWAGGER_ENABLED=false`.
+
+### Try it out (cookies httpOnly)
+
+Authorize ne permet pas de coller les cookies httpOnly. Enchaîne **register** ou **login** depuis l'UI Swagger (même navigateur), puis appelle **me** / **refresh** / **logout** : le navigateur enverra `fm_access_token` et `fm_refresh_token` automatiquement.
+
+### Convention
+
+Documente chaque nouvel endpoint avec `@ApiTags`, `@ApiOperation`, `@Api*Response`, `@ApiBody` si besoin, et `@ApiProperty` sur les DTO. Aligne les codes HTTP documentés avec le runtime (`@HttpCode` si besoin).
+
 
