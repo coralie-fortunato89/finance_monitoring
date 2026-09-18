@@ -1,12 +1,17 @@
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { isAuthenticated, login } from '../lib/auth';
+import { fetchMe, login, mapAuthError } from '../lib/auth';
 
-export const Route = createFileRoute("/login")({
-  beforeLoad: () => {
-    if (isAuthenticated()) {
+export const Route = createFileRoute('/login')({
+  beforeLoad: async () => {
+    try {
+      await fetchMe();
       throw redirect({ to: '/' });
+    } catch (error) {
+      if (error && typeof error === 'object' && 'to' in error) {
+        throw error;
+      }
     }
   },
   component: LoginPage,
@@ -26,8 +31,8 @@ function LoginPage() {
     try {
       await login({ email, password });
       await navigate({ to: '/' });
-    } catch {
-      setError('Email ou mot de passe incorrect.');
+    } catch (err) {
+      setError(mapAuthError(err, 'Email ou mot de passe incorrect.'));
     } finally {
       setPending(false);
     }

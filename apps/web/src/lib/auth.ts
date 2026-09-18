@@ -1,6 +1,5 @@
+import axios from 'axios';
 import { apiClient } from './api-client';
-
-const TOKEN_KEY = 'fm_access_token';
 
 export type AuthUser = {
   id: string;
@@ -10,34 +9,40 @@ export type AuthUser = {
 };
 
 export type AuthResponse = {
-  accessToken: string;
   user: AuthUser;
 };
 
-export function getAccessToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(TOKEN_KEY);
-}
-
-export function setAccessToken(token: string): void {
-  window.localStorage.setItem(TOKEN_KEY, token);
-}
-
-export function clearAccessToken(): void {
-  window.localStorage.removeItem(TOKEN_KEY);
-}
-
-export function isAuthenticated(): boolean {
-  return Boolean(getAccessToken());
-}
-
-apiClient.interceptors.request.use((config) => {
-  const token = getAccessToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+export function mapAuthError(error: unknown, fallback: string): string {
+  if (!axios.isAxiosError(error)) {
+    return fallback;
   }
-  return config;
-});
+  const status = error.response?.status;
+  const message = (error.response?.data as { message?: string | string[] } | undefined)
+    ?.message;
+
+  if (status === 409) {
+    return 'Un compte existe déjà avec cet email.';
+  }
+  if (status === 401) {
+    return 'Email ou mot de passe incorrect.';
+  }
+  if (status === 400) {
+    if (Array.isArray(message)) {
+      return message.join(' ');
+    }
+    if (typeof message === 'string' && message.length > 0) {
+      return message;
+    }
+    return 'Données invalides. Vérifiez le formulaire.';
+  }
+  if (status === 429) {
+    return 'Trop de tentatives. Réessayez dans une minute.';
+  }
+  if (!error.response) {
+    return 'Impossible de joindre le serveur. Vérifiez votre connexion.';
+  }
+  return fallback;
+}
 
 export async function register(input: {
   firstName: string;
@@ -46,7 +51,6 @@ export async function register(input: {
   password: string;
 }): Promise<AuthResponse> {
   const { data } = await apiClient.post<AuthResponse>('/api/auth/register', input);
-  setAccessToken(data.accessToken);
   return data;
 }
 
@@ -55,7 +59,6 @@ export async function login(input: {
   password: string;
 }): Promise<AuthResponse> {
   const { data } = await apiClient.post<AuthResponse>('/api/auth/login', input);
-  setAccessToken(data.accessToken);
   return data;
 }
 
@@ -64,6 +67,15 @@ export async function fetchMe(): Promise<AuthUser> {
   return data;
 }
 
-export function logout(): void {
-  clearAccessToken();
+export async function refreshSession(): Promise<AuthResponse> {
+  const { data } = await apiClient.post<AuthResponse>('/api/auth/refresh');
+  return data;
+}
+
+export async function logout(): Promise<void> {
+  try {
+    await apiClient.post('/api/auth/logout');
+  } catch {
+    // Cookie may already be gone; treat logout as best-effort.
+  }
 }

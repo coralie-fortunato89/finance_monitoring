@@ -1,12 +1,17 @@
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { isAuthenticated, register } from '../lib/auth';
+import { fetchMe, mapAuthError, register } from '../lib/auth';
 
-export const Route = createFileRoute("/register")({
-  beforeLoad: () => {
-    if (isAuthenticated()) {
+export const Route = createFileRoute('/register')({
+  beforeLoad: async () => {
+    try {
+      await fetchMe();
       throw redirect({ to: '/' });
+    } catch (error) {
+      if (error && typeof error === 'object' && 'to' in error) {
+        throw error;
+      }
     }
   },
   component: RegisterPage,
@@ -28,8 +33,13 @@ function RegisterPage() {
     try {
       await register({ firstName, lastName, email, password });
       await navigate({ to: '/' });
-    } catch {
-      setError("Impossible de créer le compte. Vérifiez les champs (mot de passe ≥ 8 caractères) ou l'email.");
+    } catch (err) {
+      setError(
+        mapAuthError(
+          err,
+          'Impossible de créer le compte. Mot de passe : 10+ caractères, majuscule, minuscule, chiffre.',
+        ),
+      );
     } finally {
       setPending(false);
     }
@@ -78,12 +88,15 @@ function RegisterPage() {
           <input
             type="password"
             required
-            minLength={8}
+            minLength={10}
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 w-full rounded-xl border border-[rgba(23,58,64,0.2)] bg-white/80 px-3 py-2"
           />
+          <span className="mt-1 block text-xs text-[var(--sea-ink-soft)]">
+            Au moins 10 caractères, une majuscule, une minuscule et un chiffre.
+          </span>
         </label>
         {error ? <p className="text-sm text-red-700">{error}</p> : null}
         <button
@@ -91,7 +104,7 @@ function RegisterPage() {
           disabled={pending}
           className="w-full rounded-full bg-[rgba(79,184,178,0.9)] px-4 py-2.5 text-sm font-semibold text-[var(--sea-ink)] disabled:opacity-60"
         >
-          {pending ? 'Création…' : "Créer mon compte"}
+          {pending ? 'Création…' : 'Créer mon compte'}
         </button>
       </form>
       <p className="mt-4 text-center text-sm text-[var(--sea-ink-soft)]">

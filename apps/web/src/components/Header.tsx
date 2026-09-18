@@ -1,16 +1,16 @@
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
 import ThemeToggle from './ThemeToggle';
-import { isAuthenticated, logout } from '../lib/auth';
+import { logout } from '../lib/auth';
 
 export default function Header() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const authPage = pathname === '/login' || pathname === '/register';
-  const authed = !authPage && isAuthenticated();
+  const authed = !authPage;
 
-  function onLogout() {
-    logout();
-    void navigate({ to: '/login' });
+  async function onLogout() {
+    await logout();
+    await navigate({ to: '/login' });
   }
 
   return (
@@ -30,7 +30,7 @@ export default function Header() {
               </Link>
               <button
                 type="button"
-                onClick={onLogout}
+                onClick={() => void onLogout()}
                 className="rounded-full border border-[rgba(23,58,64,0.2)] px-3 py-1 text-sm font-semibold"
               >
                 Déconnexion

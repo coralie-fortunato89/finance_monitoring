@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { assertJwtSecret } from './jwt-secret';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({
@@ -13,13 +14,13 @@ import { JwtStrategy } from './jwt.strategy';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const secret = config.get<string>("JWT_SECRET");
-        if (!secret) {
-          throw new Error('JWT_SECRET is required');
-        }
+        const secret = assertJwtSecret(config.get<string>('JWT_SECRET'));
         return {
           secret,
-          signOptions: { expiresIn: '7d' },
+          signOptions: {
+            expiresIn: '15m',
+            algorithm: 'HS256',
+          },
         };
       },
     }),
